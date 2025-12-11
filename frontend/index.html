@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBin - AI Waste Classification</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/3095/3095113.png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-recycle"></i>
+                <h1>SmartBin</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">AI-Powered Waste Classification</h1>
+                <p class="hero-subtitle">Upload an image to identify specific waste types like plastic, glass, paper, organic waste, and more</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Fast</h3>
+                        <p>Real-time analysis</p>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-brain"></i>
+                        <h3>Accurate</h3>
+                        <p>Multi-class detection</p>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-leaf"></i>
+                        <h3>Eco-friendly</h3>
+                        <p>Promotes recycling</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://cdn-icons-png.flaticon.com/512/3095/3095113.png" alt="SmartBin AI">
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section class="upload-section">
+        <div class="container">
+            <h2 class="section-title">Upload Waste Image</h2>
+            <p class="section-subtitle">Supported formats: JPG, PNG, JPEG, GIF (Max 5MB)</p>
+            
+            <div class="upload-container">
+                <!-- Upload Area -->
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Drag & Drop Image Here</h3>
+                    <p>or click to browse files</p>
+                    <input type="file" id="imageInput" accept="image/*" class="file-input">
+                    <div class="file-info" id="fileInfo"></div>
+                </div>
+                
+                <!-- Image Preview -->
+                <div class="preview-container">
+                    <div class="preview-header">
+                        <h3><i class="fas fa-image"></i> Image Preview</h3>
+                    </div>
+                    <div class="image-preview" id="imagePreview">
+                        <div class="preview-placeholder">
+                            <i class="fas fa-image"></i>
+                            <p>Your image will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn-primary" id="analyzeBtn" disabled>
+                    <i class="fas fa-brain"></i> Identify Waste
+                </button>
+                <button class="btn-secondary" id="resetBtn">
+                    <i class="fas fa-redo"></i> Clear
+                </button>
+                <button class="btn-tertiary" id="sampleBtn">
+                    <i class="fas fa-vial"></i> Try Sample Images
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section">
+        <div class="container">
+            <h2 class="section-title">Classification Results</h2>
+            
+            <!-- Top Prediction Card -->
+            <div class="top-prediction-card" id="topPredictionCard" style="display: none;">
+                <div class="prediction-header">
+                    <h3><i class="fas fa-trophy"></i> Top Prediction</h3>
+                </div>
+                <div class="prediction-details" id="topPredictionDetails">
+                    <div class="category-icon-large">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="category-info">
+                        <h2 id="topCategoryName">-</h2>
+                        <div class="category-type" id="topCategoryType">-</div>
+                        <div class="confidence-badge" id="topConfidence">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-container">
+                <!-- Prediction Card -->
+                <div class="result-card prediction-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar"></i> Classification</h3>
+                    </div>
+                    <div class="prediction-content">
+                        <div class="prediction-icon" id="predictionIcon">
+                            <i class="fas fa-question"></i>
+                        </div>
+                        <div class="prediction-text">
+                            <h2 id="predictionText">Upload an image to analyze</h2>
+                            <div class="confidence" id="confidenceText">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Probability Chart -->
+                <div class="result-card probability-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> Biodegradable vs Non-Biodegradable</h3>
+                    </div>
+                    <div class="probability-content">
+                        <div class="probability-bars">
+                            <div class="probability-item">
+                                <div class="prob-label">
+                                    <i class="fas fa-trash-alt" style="color: #e74c3c;"></i>
+                                    <span>Non-Biodegradable</span>
+                                </div>
+                                <div class="prob-bar-container">
+                                    <div class="prob-bar">
+                                        <div class="prob-fill non-bio-fill" id="nonBioBar" style="width: 0%"></div>
+                                    </div>
+                                    <div class="prob-percentage" id="nonBioPercent">0%</div>
+                                </div>
+                            </div>
+                            <div class="probability-item">
+                                <div class="prob-label">
+                                    <i class="fas fa-leaf" style="color: #2ecc71;"></i>
+                                    <span>Biodegradable</span>
+                                </div>
+                                <div class="prob-bar-container">
+                                    <div class="prob-bar">
+                                        <div class="prob-fill bio-fill" id="bioBar" style="width: 0%"></div>
+                                    </div>
+                                    <div class="prob-percentage" id="bioPercent">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="probability-chart-visual">
+                            <canvas id="probabilityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Waste Categories Display -->
+            <div class="waste-categories-section">
+                <h3><i class="fas fa-list-ul"></i> Detailed Waste Classification</h3>
+                <div class="categories-container" id="categoriesContainer">
+                    <!-- Categories will be populated by JavaScript -->
+                    <div class="category-placeholder">
+                        <i class="fas fa-search"></i>
+                        <p>Upload an image to see detailed waste classification</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disposal Instructions -->
+            <div class="disposal-card" id="disposalCard">
+                <div class="card-header">
+                    <h3><i class="fas fa-info-circle"></i> Disposal Instructions</h3>
+                </div>
+                <div class="disposal-content" id="disposalContent">
+                    <div class="disposal-placeholder">
+                        <i class="fas fa-recycle"></i>
+                        <p>Analysis results will show proper disposal instructions here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <h3>Upload Image</h3>
+                    <p>Upload a clear image of waste material</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI Analysis</h3>
+                    <p>AI identifies specific waste types</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Get Results</h3>
+                    <p>See detailed classification with probabilities</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <h3>Disposal Guide</h3>
+                    <p>Get specific disposal instructions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supported Waste Types Section -->
+    <section class="waste-types-section">
+        <div class="container">
+            <h2 class="section-title">Waste Types We Identify</h2>
+            <div class="waste-types-grid">
+                <div class="waste-type-card">
+                    <div class="waste-icon" style="background: #e74c3c;">
+                        <i class="fas fa-wine-bottle"></i>
+                    </div>
+                    <h3>Plastic</h3>
+                    <p>Bottles, containers, packaging</p>
+                </div>
+                <div class="waste-type-card">
+                    <div class="waste-icon" style="background: #3498db;">
+                        <i class="fas fa-wine-glass"></i>
+                    </div>
+                    <h3>Glass</h3>
+                    <p>Bottles, jars, broken glass</p>
+                </div>
+                <div class="waste-type-card">
+                    <div class="waste-icon" style="background: #95a5a6;">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3>Metal</h3>
+                    <p>Cans, foil, containers</p>
+                </div>
+                <div class="waste-type-card">
+                    <div class="waste-icon" style="background: #f1c40f;">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h3>Paper</h3>
+                    <p>Newspaper, cardboard, packaging</p>
+                </div>
+                <div class="waste-type-card">
+                    <div class="waste-icon" style="background: #2ecc71;">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <h3>Organic</h3>
+                    <p>Food waste, peels, leftovers</p>
+                </div>
+                <div class="waste-type-card">
+                    <div class="waste-icon" style="background: #9b59b6;">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3>Textile</h3>
+                    <p>Clothes, fabrics, textiles</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <h2 class="section-title">About SmartBin</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Our Mission</h3>
+                    <p>SmartBin is an AI-powered waste classification system that identifies specific waste types like plastic, glass, metal, paper, and organic materials. We help individuals and communities properly segregate waste for better recycling and environmental protection.</p>
+                    
+                    <h3>Why Proper Waste Segregation Matters</h3>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check-circle"></i> Identifies specific waste materials</li>
+                        <li><i class="fas fa-check-circle"></i> Provides accurate disposal instructions</li>
+                        <li><i class="fas fa-check-circle"></i> Promotes effective recycling</li>
+                        <li><i class="fas fa-check-circle"></i> Reduces environmental pollution</li>
+                        <li><i class="fas fa-check-circle"></i> Supports sustainable communities</li>
+                    </ul>
+                </div>
+                <div class="about-image">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3373/3373945.png" alt="Waste Management">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-recycle"></i>
+                    <h2>SmartBin</h2>
+                    <p>AI for a cleaner planet</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#about">About</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 SmartBin AI. All rights reserved.</p>
+                <p class="disclaimer">Note: This AI model provides predictions based on image analysis. Always follow local waste disposal regulations.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Modal -->
+    <div class="modal" id="loadingModal">
+        <div class="modal-content">
+            <div class="spinner"></div>
+            <h3>Analyzing Image</h3>
+            <p>Our AI is identifying waste materials...</p>
+        </div>
+    </div>
+
+    <!-- Sample Images Modal -->
+    <div class="modal" id="sampleModal">
+        <div class="modal-content sample-modal">
+            <div class="modal-header">
+                <h3>Try Sample Images</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="sample-images">
+                <div class="sample-item" data-image="plastic">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3082/3082383.png" alt="Plastic Bottle">
+                    <p>Plastic Bottle</p>
+                </div>
+                <div class="sample-item" data-image="glass">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3082/3082384.png" alt="Glass Bottle">
+                    <p>Glass Bottle</p>
+                </div>
+                <div class="sample-item" data-image="paper">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3082/3082388.png" alt="Paper">
+                    <p>Paper</p>
+                </div>
+                <div class="sample-item" data-image="organic">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3079/3079013.png" alt="Banana Peel">
+                    <p>Organic Waste</p>
+                </div>
+                <div class="sample-item" data-image="metal">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3082/3082385.png" alt="Metal Can">
+                    <p>Metal Can</p>
+                </div>
+                <div class="sample-item" data-image="cardboard">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3082/3082390.png" alt="Cardboard">
+                    <p>Cardboard</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
